@@ -5,11 +5,13 @@
 //  Created by Laura Corssac on 7/15/22.
 //
 
+// ChildViewVM2 has a @Binding, which makes possible to the view get updated when a change occurs and also the ParentViewVM2 receive the changes
+
 import SwiftUI
 import Combine
 
 struct SimpleStruct {
-   var counter: Int
+    var counter: Int
     
     init(counter: Int) {
         self.counter = counter
@@ -17,11 +19,11 @@ struct SimpleStruct {
     
 }
 
-class StepperViewViewModel2 {
+class ChildViewBindingVM {
     
     @Binding var simpleStruct: SimpleStruct
     private var cancellableBag = Set<AnyCancellable>()
-
+    
     init(simpleStruct: Binding<SimpleStruct>) {
         self._simpleStruct = simpleStruct
         
@@ -36,24 +38,24 @@ class StepperViewViewModel2 {
     }
 }
 
-struct StepperView2: View {
+struct ChildViewBinding: View {
     
-    var vm: StepperViewViewModel2
+    var vm: ChildViewBindingVM
     
     var body: some View {
         Stepper {
             Text("Counter = \(vm.simpleStruct.counter)")
-                } onIncrement: {
-                    vm.increment()
-                } onDecrement: {
-                    vm.decrement()
-                }
-                .padding()
+        } onIncrement: {
+            vm.increment()
+        } onDecrement: {
+            vm.decrement()
+        }
+        .padding()
         
     }
 }
 
-class ContentViewViewModel2: ObservableObject {
+class ParentViewBindingVM: ObservableObject {
     
     @Published var simpleStruct: SimpleStruct
     private var cancellableBag = Set<AnyCancellable>()
@@ -65,43 +67,38 @@ class ContentViewViewModel2: ObservableObject {
         )
     }
     
-    var stepperViewModel: StepperViewViewModel2 {
-        StepperViewViewModel2.init(simpleStruct: binding)
+    var stepperViewModel: ChildViewBindingVM {
+        .init(simpleStruct: binding)
     }
     
     init() {
         let simpleStruct = SimpleStruct(counter: 0)
         self.simpleStruct = simpleStruct
         
-        
-        $simpleStruct.sink { struc in
-            print("how", struc.counter)
-        }.store(in: &cancellableBag)
-    
     }
     
 }
 
-struct ParentView2: View {
+struct ParentViewBinding: View {
     
-    @ObservedObject var vm: ContentViewViewModel2
+    @ObservedObject var vm: ParentViewBindingVM
     
     var body: some View {
         
         VStack {
             Text("Step Count = \(vm.simpleStruct.counter)")
                 .padding()
-            StepperView2(vm: vm.stepperViewModel)
+            ChildViewBinding(vm: vm.stepperViewModel)
         }
         
     }
     
 }
 
-struct ContentView2_Previews: PreviewProvider {
+struct ParentViewBinding_Previews: PreviewProvider {
     
     
     static var previews: some View {
-        ParentView2(vm: ContentViewViewModel2())
+        ParentViewBinding(vm: .init())
     }
 }

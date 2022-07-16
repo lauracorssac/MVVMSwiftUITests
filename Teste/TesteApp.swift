@@ -11,7 +11,9 @@ import SwiftUI
 struct TesteApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(vm: .init())
+            //ParentViewBinding(vm: .init())
+            //ParentViewCombine(vm: .init())
+            ParentViewClassModel(vm: .init())
         }
     }
 }
