@@ -1,5 +1,5 @@
 //
-//  ContentViewCombine.swift
+//  ParentViewCombine.swift
 //  Teste
 //
 //  Created by Laura Corssac on 7/16/22.
